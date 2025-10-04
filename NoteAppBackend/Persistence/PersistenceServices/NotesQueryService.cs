@@ -35,4 +35,17 @@ public static class NotesQueryService
                 .Select(static n => n.MapNoteToNoteDto())
                 .SingleOrDefault()
             );
+
+    public static readonly Func<NoteAppBackendContext, string, IEnumerable<NoteDto?>> GetNoteBySearchParameter
+        = EF.CompileQuery(
+            static (NoteAppBackendContext context, string searchParam) =>
+            context.Notes.AsNoTracking()
+                .Include(n => n.Type)
+                .Where(n => n.NoteBody.Contains(searchParam) ||
+                    n.NoteTitle.Contains(searchParam))
+                .OrderByDescending(n => n.CreatedAt)
+                .Select(static n => n.MapNoteToNoteDto())
+                .Take(10)
+                .ToList()
+            );
 }
