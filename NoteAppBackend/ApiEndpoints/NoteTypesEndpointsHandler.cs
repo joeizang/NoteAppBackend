@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Persistence;
+using NoteAppBackend.Persistence.PersistenceServices;
+using LanguageExt.Core;
 
 namespace NoteAppBackend.ApiEndpoints;
 
@@ -18,9 +20,10 @@ public static class NoteTypesEndpointHandler
         throw new NotImplementedException();
     }
 
-    internal static async Task GetAllNoteTypes([FromServices] NoteAppBackendContext context)
+    internal static async Task<Result<List<NoteSummaryDto>>> GetAllNoteTypes([FromServices] NoteAppBackendContext context)
     {
-        throw new NotImplementedException();
+        var result = NotesQueryService.GetAllNotes(context);
+        return new Result<List<NoteSummaryDto>>(result);
     }
 
     internal static async Task GetPagedNoteTypes([FromServices] NoteAppBackendContext context, string cursor)
