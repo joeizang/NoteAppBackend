@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Persistence;
 using NoteAppBackend.Persistence.PersistenceServices;
-using LanguageExt.Core;
+using LanguageExt.Common;
 
 namespace NoteAppBackend.ApiEndpoints;
 

@@ -22,7 +22,7 @@ public static class NotesQueryService
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
                 .Where(n => n.CreatedAt > cursor)
-                .OrderByDescending (n => n.CreatedAt)
+                .OrderByDescending(n => n.CreatedAt)
                 .Select(static n => n.MaptNoteToNotePagedSummaryDto()).Take(10)
             );
 
@@ -41,11 +41,11 @@ public static class NotesQueryService
             static (NoteAppBackendContext context, string searchParam) =>
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
-                .Where(n => n.NoteBody.Contains(searchParam) ||
-                    n.NoteTitle.Contains(searchParam))
+                .Where(n => EF.Functions.ILike(n.NoteBody, $"%{searchParam}%") ||
+                    EF.Functions.ILike(n.NoteTitle, $"%{searchParam}%"))
                 .OrderByDescending(n => n.CreatedAt)
                 .Select(static n => n.MapNoteToNoteDto())
-                .Take(10)
+                .Take(20)
                 .ToList()
             );
 }

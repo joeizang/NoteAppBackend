@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 using NoteAppBackend.DomainModels;
 using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Persistence;
@@ -14,32 +15,45 @@ public static class NoteEndpointsHandler
     {
         var note = Note.Create(dto);
         var result = await command.Create(note).ConfigureAwait(false);
-        return TypedResults.Ok(result);
+        return result.Match<IResult>(
+            (r) => TypedResults.Ok(r),
+            (e) => TypedResults.BadRequest(e.Message));
     }
 
-    internal static async Task DeleteNote([FromServices] NoteAppBackendContext context)
+    internal static async Task<IResult> DeleteNote([FromServices] NoteAppBackendContext context,
+        [FromServices] ICommandService<Note> command, Guid noteId)
     {
-        throw new NotImplementedException();
+        var result = await command.Delete(noteId).ConfigureAwait(false);
+        return result.Match<IResult>((r) => TypedResults.Ok() , (e) => TypedResults.BadRequest(e.Message));
     }
 
-    internal static async Task GetAllNotes([FromServices] NoteAppBackendContext context)
+    internal static IResult GetAllNotes([FromServices] NoteAppBackendContext context)
+        => TypedResults.Ok(NotesQueryService.GetAllNotes(context));
+
+    internal static IResult GetNoteById([FromServices] NoteAppBackendContext context, Guid id)
     {
-        throw new NotImplementedException();
+        var result = NotesQueryService.GetNoteById(context, id);
+        return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
 
-    internal static async Task GetNoteById([FromServices] NoteAppBackendContext context)
+    internal static IResult GetPagedNotes([FromServices] NoteAppBackendContext context, string cursor)
     {
-        throw new NotImplementedException();
+        var parseResult = DateTime.TryParse(cursor, out var cursorInstant);
+        if (parseResult == false) return TypedResults.BadRequest($"{cursor} is not a valid cursor!");
+        var result = NotesQueryService.GetPagedNotes(context, Instant.FromDateTimeUtc(cursorInstant));
+        return result is null ? TypedResults.Ok<List<NotePagedSummary>>([]) : TypedResults.Ok(result);
     }
 
-    internal static async Task GetPagedNotes([FromServices] NoteAppBackendContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static async Task UpdateNote([FromServices] NoteAppBackendContext context,
+    internal static async Task<IResult> UpdateNote([FromServices] NoteAppBackendContext context,
         [FromBody] NoteUpdateDto dto, [FromServices] ICommandService<Note> command)
     {
-        var result = 
+        var entity = NoteUpdateDto.MapToNote(dto);
+        if (entity.Item1 is null && entity.Item2 is not null)
+            return TypedResults.BadRequest(entity.Item2.ErrorMessage);
+
+        var result = await command.Update(entity.Item1!).ConfigureAwait(false);
+
+        return result.Match<IResult>(
+            (r) => TypedResults.Ok(r), (e) => TypedResults.InternalServerError(e.Message));
     }
 }

@@ -4,7 +4,7 @@ using NoteAppBackend.DomainModels;
 
 namespace NoteAppBackend.Persistence.TypeConfigurations;
 
-public class NoteEntityTypeConfiguration : IEntityTypeConfiguration<Note>
+public sealed class NoteEntityTypeConfiguration : IEntityTypeConfiguration<Note>
 {
     public void Configure(EntityTypeBuilder<Note> builder)
     {
@@ -17,11 +17,18 @@ public class NoteEntityTypeConfiguration : IEntityTypeConfiguration<Note>
 
         builder.Property(n => n.NoteTitle)
             .IsRequired()
-            .HasMaxLength(150);
+            .HasMaxLength(200);
 
         builder.Property(n => n.NoteBody)
             .IsRequired();
 
-        
+        builder.Property(n => n.NoteDate)
+            .IsRequired();
+
+
+        builder.HasIndex(n => n.NoteTitle);
+        builder.HasIndex(n => n.NoteBody);
+        builder.HasIndex(n => n.CreatedAt);
+        builder.HasIndex(n => n.NoteDate);
     }
 }

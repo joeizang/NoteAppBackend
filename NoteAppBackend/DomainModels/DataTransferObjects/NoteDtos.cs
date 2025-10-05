@@ -4,11 +4,15 @@ public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, st
 
 public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
 
-public record NoteTypeSummaryDto(Guid TypeId, string TypeName, string TypeColorCode);
+public record NoteTypeSummaryDto(Guid TypeId, string TypeName, string Description, string TypeColorCode);
 
-public record NotePagedSummary();
+public record NotePagedSummary(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
 
-public record NoteDto();
+public record NoteDto(Guid NoteId, string Title, string NoteBody,
+    NoteTypeSummaryDto TypeSummary, string UpdatedAt);
+
+public record NoteUpdateDto(Guid NoteId, string Title, string NoteBody, 
+    string CurrentDate, NoteTypeSummaryDto TypeSummary);
 
 
 public static class DtoExtensions
@@ -17,11 +21,29 @@ public static class DtoExtensions
     {
         public NoteSummaryDto MapNoteToNoteSummaryDto() =>
             new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(),
-                new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.ColorCode));
+                new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode));
 
-        public NotePagedSummary MaptNoteToNotePagedSummaryDto() => new();
+        public NotePagedSummary MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(),
+                new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode));
 
-        public NoteDto MapNoteToNoteDto() => new();
+        public NoteDto MapNoteToNoteDto() => new(note.Id, note.NoteTitle, note.NoteBody,
+            new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode),
+            note.UpdatedAt.ToString());
+    }
+
+    extension(NoteUpdateDto)
+    {
+        public static (Note?, ValidationError?) MapToNote(NoteUpdateDto dto)
+        {
+            if (dto is not null)
+                if (!string.IsNullOrEmpty(dto.Title))
+                    if(!string.IsNullOrEmpty(dto.NoteBody))
+                        if(!string.IsNullOrEmpty(dto.CurrentDate))
+                            if(dto.TypeSummary is not null)
+                                return (Note.Create(dto), null);
+            return (null, new ValidationError("Your dto is in an invalid state!"));
+        }
     }
 }
 
+public record ValidationError(string ErrorMessage);

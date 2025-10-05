@@ -11,7 +11,7 @@ public interface ICommandService<T> where T : BaseEntity
 
     Task<Result<T>> Update(T entity);
 
-    Task<Result<T>> Delete(T entity);
+    Task<Result<T>> Delete(Guid id);
 }
 
 public class CommandService<T> : ICommandService<T> where T: BaseEntity
@@ -37,15 +37,14 @@ public class CommandService<T> : ICommandService<T> where T: BaseEntity
         }
     }
 
-    public async Task<Result<T>> Delete(T entity)
+    public async Task<Result<T>> Delete(Guid id)
     {
         try
         {
-            entity.IsDeleted = true;
-            entity.UpdatedAt = Instant.FromDateTimeUtc(DateTime.UtcNow);
-            _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync().ConfigureAwait(false);
-            return new Result<T>(entity);
+            var result = await _set.Where(x => x.Id == id)
+                .ExecuteUpdateAsync(x => x.SetProperty(s => s.IsDeleted, true))
+                .ConfigureAwait(false);
+            return new Result<T>();
         }
         catch (Exception ex)
         {
