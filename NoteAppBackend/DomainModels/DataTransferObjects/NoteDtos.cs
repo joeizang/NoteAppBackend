@@ -1,6 +1,6 @@
 ﻿namespace NoteAppBackend.DomainModels.DataTransferObjects;
 
-public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, string Others);
+public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, NoteTypeCreationDto TypeDto);
 
 public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
 
@@ -35,15 +35,16 @@ public static class DtoExtensions
     {
         public static (Note?, ValidationError?) MapToNote(NoteUpdateDto dto)
         {
-            if (dto is not null)
-                if (!string.IsNullOrEmpty(dto.Title))
-                    if(!string.IsNullOrEmpty(dto.NoteBody))
-                        if(!string.IsNullOrEmpty(dto.CurrentDate))
-                            if(dto.TypeSummary is not null)
-                                return (Note.Create(dto), null);
-            return (null, new ValidationError("Your dto is in an invalid state!"));
+            if (dto is null)
+                return (null, new ValidationError("Your dto is in an invalid state!"));
+            if (string.IsNullOrEmpty(dto.Title) && string.IsNullOrEmpty(dto.NoteBody) 
+                && string.IsNullOrEmpty(dto.CurrentDate) && dto.TypeSummary is not null)
+                return (null, new ValidationError("Your dto is in an invalid state! Some required fields are invalid!"));
+            return (Note.UpdateNote(dto), null);
         }
     }
 }
 
 public record ValidationError(string ErrorMessage);
+
+public record NoteTypeCreationDto(string TypeName, string TypeDescription, string ColorCode);

@@ -28,6 +28,11 @@ public sealed class NoteType : BaseEntity
 
     public static NoteType Create(NoteTypeCreationDto dto)
     {
-        return new NoteType();
+        return new NoteType
+        {
+            Name = dto.TypeName,
+            Description = dto.TypeDescription,
+            ColorCode = dto.ColorCode
+        };
     }
 }

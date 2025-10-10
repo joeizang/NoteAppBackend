@@ -48,4 +48,12 @@ public static class NotesQueryService
                 .Take(20)
                 .ToList()
             );
+
+    public static readonly Func<NoteAppBackendContext, IEnumerable<NoteTypeSummaryDto>> GetNoteTypes
+        = EF.CompileQuery(
+            static (NoteAppBackendContext context) =>
+            context.NoteTypes.AsNoTracking()
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
+            );
 }

@@ -54,6 +54,12 @@ public static class NoteEndpointsHandler
         var result = await command.Update(entity.Item1!).ConfigureAwait(false);
 
         return result.Match<IResult>(
-            (r) => TypedResults.Ok(r), (e) => TypedResults.InternalServerError(e.Message));
+            (r) => TypedResults.Ok(r.MapNoteToNoteSummaryDto()), (e) => TypedResults.InternalServerError(e.Message));
+    }
+
+    internal static IResult GetNoteTypes([FromServices] NoteAppBackendContext context)
+    {
+        var result = NotesQueryService.GetNoteTypes(context);
+        return result is null ? TypedResults.Ok<IEnumerable<NoteTypeSummaryDto>>([]) : TypedResults.Ok(result);
     }
 }

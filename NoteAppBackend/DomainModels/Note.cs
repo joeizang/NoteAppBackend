@@ -24,18 +24,23 @@ public sealed class Note : AggregateRoot
 
     public static Note Create(NoteCreationDto dto)
     {
-        return new Note();
+        return new Note
+        {
+            NoteTitle = dto.NoteTitle,
+            NoteBody = dto.NoteBody,
+            UpdatedAt = Instant.FromDateTimeUtc(DateTime.Parse(dto.Date)),
+            Type = NoteType.Create(dto.TypeDto)
+        };
     }
 
-    public static Note Create(NoteUpdateDto dto)
+    public static Note UpdateNote(NoteUpdateDto dto)
     {
         return new Note
         {
             Id = dto.NoteId,
             NoteTitle = dto.Title,
             NoteBody = dto.NoteBody,
-            UpdatedAt = Instant.FromDateTimeUtc(DateTime.Parse(dto.CurrentDate)),
-            Type = new NoteType { Id = }
+            UpdatedAt = Instant.FromDateTimeUtc(DateTime.Parse(dto.CurrentDate))
         };
     }
 }
