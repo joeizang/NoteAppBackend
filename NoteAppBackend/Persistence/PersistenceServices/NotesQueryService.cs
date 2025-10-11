@@ -8,11 +8,11 @@ public static class NotesQueryService
 {
     public static readonly Func<NoteAppBackendContext, List<NoteSummaryDto>> GetAllNotes
         = EF.CompileQuery(
-            static (NoteAppBackendContext context) =>
+            (NoteAppBackendContext context) =>
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
-                .OrderByDescending(n => n.CreatedAt)
-                .Select(static n => n.MapNoteToNoteSummaryDto())
+                .OrderByDescending(n => n.Id)
+                .Select(n => n.MapNoteToNoteSummaryDto())
                 .ToList()
         );
 
@@ -22,7 +22,7 @@ public static class NotesQueryService
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
                 .Where(n => n.CreatedAt > cursor)
-                .OrderByDescending(n => n.CreatedAt)
+                .OrderByDescending(n => n.Id)
                 .Select(static n => n.MaptNoteToNotePagedSummaryDto()).Take(10)
             );
 
@@ -43,19 +43,19 @@ public static class NotesQueryService
                 .Include(n => n.Type)
                 .Where(n => EF.Functions.ILike(n.NoteBody, $"%{searchParam}%") ||
                     EF.Functions.ILike(n.NoteTitle, $"%{searchParam}%"))
-                .OrderByDescending(n => n.CreatedAt)
+                .OrderByDescending(n => n.Id)
                 .Select(static n => n.MapNoteToNoteDto())
                 .Take(20)
                 .ToList()
             );
 
-    public static readonly Func<NoteAppBackendContext, IEnumerable<NoteTypeSummaryDto>> GetNoteTypes
+    public static readonly Func<NoteAppBackendContext, NoteTypeSummaryDto[]> GetNoteTypes
         = EF.CompileQuery(
-            static (NoteAppBackendContext context) =>
+            (NoteAppBackendContext context) =>
             context.NoteTypes.AsNoTracking()
-            .OrderByDescending(t => t.CreatedAt)
-            .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
-            );
+            .OrderByDescending(t => t.Id)
+            .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
+            .ToArray());
 
     public static readonly Func<NoteAppBackendContext, Guid, NoteTypeSummaryDto?> GetNoteTypeById
         = EF.CompileQuery(

@@ -4,3 +4,13 @@ GET {{NoteAppBackend_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{NoteAppBackend_HostAddress}}/api/notetypes/all
+Accept: application/json
+
+###
+
+GET {{NoteAppBackend_HostAddress}}/api/notes/all
+Accept: application/json
+
+###

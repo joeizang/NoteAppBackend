@@ -5,6 +5,7 @@ using NoteAppBackend.Persistence;
 using NoteAppBackend.Persistence.PersistenceServices;
 using LanguageExt.Common;
 using NoteAppBackend.DomainModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace NoteAppBackend.ApiEndpoints;
 
@@ -32,8 +33,11 @@ public static class NoteTypesEndpointHandler
 
     internal static IResult GetAllNoteTypes([FromServices] NoteAppBackendContext context)
     {
-        var result = NotesQueryService.GetAllNotes(context);
-        return result.Count < 1 ? TypedResults.Ok<List<NoteSummaryDto>>([]) : TypedResults.Ok(result);
+        // var result = NotesQueryService.GetNoteTypes(context);
+        var result = context.NoteTypes.AsNoTracking()
+            // .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new { t.Id, t.Name, t.Description, t.ColorCode }).ToArray();
+        return result.Length < 1 ? TypedResults.Ok<List<NoteSummaryDto>>([]) : TypedResults.Ok(result);
     }
 
     // internal static async Task GetPagedNoteTypes([FromServices] NoteAppBackendContext context, string cursor)

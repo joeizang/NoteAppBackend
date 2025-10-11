@@ -179,16 +179,18 @@ public class NoteTypeGenerator
     public IEnumerable<NoteType> GetNoteTypes()
     {
         HashSet<NoteType> types = new();
+        List<NoteType> _types = [];
         var adjectivesCount = Adjectives.Distinct().Count();
         var nounCount = Nouns.Distinct().Count();
         var typesCount = Types.Distinct().Count();
         var colorCodesCount = ColorCodes.Distinct().Count();
-        var maxCount = (int)(adjectivesCount * nounCount * typesCount * colorCodesCount * .6);
+        var maxCount = (int)(adjectivesCount * nounCount * typesCount * colorCodesCount * .000001);
 
-        while(types.Count < maxCount)
+        while (types.Count < maxCount)
         {
             var noteType = CreateNext();
-            if (types.Add(noteType)) yield return noteType;
+            if (types.Add(noteType)) _types.Add(noteType);
         }
+        return _types;
     }
 }
