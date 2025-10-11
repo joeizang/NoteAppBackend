@@ -16,9 +16,9 @@ public static class NotesQueryService
                 .ToList()
         );
 
-    public static readonly Func<NoteAppBackendContext, Instant, IEnumerable<NotePagedSummary>> GetPagedNotes
+    public static readonly Func<NoteAppBackendContext, TimeOnly, IEnumerable<NotePagedSummary>> GetPagedNotes
         = EF.CompileQuery(
-            static (NoteAppBackendContext context, Instant cursor) =>
+            static (NoteAppBackendContext context, TimeOnly cursor) =>
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
                 .Where(n => n.CreatedAt > cursor)

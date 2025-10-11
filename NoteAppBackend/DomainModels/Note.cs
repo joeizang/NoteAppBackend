@@ -32,7 +32,6 @@ public sealed class Note : AggregateRoot
         {
             NoteTitle = dto.NoteTitle,
             NoteBody = dto.NoteBody,
-            UpdatedAt = Instant.FromDateTimeUtc(DateTime.Parse(dto.Date)),
             Type = NoteType.Create(dto.TypeDto)
         };
     }
@@ -44,7 +43,7 @@ public sealed class Note : AggregateRoot
             Id = dto.NoteId,
             NoteTitle = dto.Title,
             NoteBody = dto.NoteBody,
-            UpdatedAt = Instant.FromDateTimeUtc(DateTime.Parse(dto.CurrentDate))
+            UpdatedAt = TimeOnly.FromDateTime(DateTime.Parse(dto.CurrentDate))
         };
     }
 }

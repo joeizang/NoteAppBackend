@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
 {
-    opt.UseNpgsql(env["POSTGRES_CONN_STRING"], act => act.UseNodaTime())
+    opt.UseNpgsql(env["POSTGRES_CONN_STRING"])
         .UseAsyncSeeding(async (context, _, token) =>
         {
             var test = await context.Set<NoteType>().AnyAsync(token).ConfigureAwait(false);

@@ -14,6 +14,10 @@ public sealed class NoteEntityTypeConfiguration : IEntityTypeConfiguration<Note>
             .WithOne()
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(n => n.NoteOwner)
+            .WithMany(o => o.UserNotes)
+            .HasForeignKey(n => n.NoteOwnerId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Property(n => n.NoteTitle)
             .IsRequired()

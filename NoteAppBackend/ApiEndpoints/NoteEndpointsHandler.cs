@@ -40,7 +40,7 @@ public static class NoteEndpointsHandler
     {
         var parseResult = DateTime.TryParse(cursor, out var cursorInstant);
         if (parseResult == false) return TypedResults.BadRequest($"{cursor} is not a valid cursor!");
-        var result = NotesQueryService.GetPagedNotes(context, Instant.FromDateTimeUtc(cursorInstant));
+        var result = NotesQueryService.GetPagedNotes(context, TimeOnly.FromDateTime(cursorInstant));
         return result is null ? TypedResults.Ok<List<NotePagedSummary>>([]) : TypedResults.Ok(result);
     }
 

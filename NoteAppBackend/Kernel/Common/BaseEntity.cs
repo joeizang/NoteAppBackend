@@ -8,15 +8,18 @@ public abstract class BaseEntity
 
     public bool IsDeleted { get; set; }
 
-    public Instant CreatedAt { get; set; }
-
-    public Instant UpdatedAt { get; set; }
+    public DateOnly CreatedOn { get; set; }
+    public TimeOnly CreatedAt { get; set; }
+    public DateOnly UpdatedOn { get; set; }
+    public TimeOnly UpdatedAt { get; set; }
 
     protected BaseEntity(Guid? id)
     {
         Id = id ?? Ulid.NewUlid(DateTimeOffset.Now).ToGuid();
-        CreatedAt = Instant.FromDateTimeUtc(DateTime.Now);
+        CreatedOn = DateOnly.FromDateTime(DateTime.Today);
+        CreatedAt = TimeOnly.FromDateTime(DateTime.Today);
         UpdatedAt = CreatedAt;
+        UpdatedOn = CreatedOn;
     }
 
     protected BaseEntity() { }
