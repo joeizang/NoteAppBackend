@@ -62,4 +62,18 @@ public static class NoteEndpointsHandler
         var result = NotesQueryService.GetNoteTypes(context);
         return result is null ? TypedResults.Ok<IEnumerable<NoteTypeSummaryDto>>([]) : TypedResults.Ok(result);
     }
+
+    internal static async Task<IResult> CreateNoteType([FromServices] NoteAppBackendContext context,
+    [FromBody] NoteTypeCreationDto dto, [FromServices] ICommandService<NoteType> command)
+    {
+        if (dto is null)
+            return TypedResults.BadRequest("Your request is invalid, the request valid is emtpy!");
+        if (string.IsNullOrEmpty(dto.ColorCode) && string.IsNullOrEmpty(dto.TypeName))
+            return TypedResults.BadRequest("Your request is invalid, missing required properties");
+        var result = await command.Create(NoteType.Create(dto)).ConfigureAwait(false);
+        return result.Match<IResult>(
+            (r) => TypedResults.Ok(r.MapToNoteTypeSummaryDto()),
+            (e) => TypedResults.InternalServerError("The note type could not be created because of an error!") //logging?
+        );
+    }
 }

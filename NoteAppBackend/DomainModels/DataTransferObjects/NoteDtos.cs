@@ -37,11 +37,17 @@ public static class DtoExtensions
         {
             if (dto is null)
                 return (null, new ValidationError("Your dto is in an invalid state!"));
-            if (string.IsNullOrEmpty(dto.Title) && string.IsNullOrEmpty(dto.NoteBody) 
+            if (string.IsNullOrEmpty(dto.Title) && string.IsNullOrEmpty(dto.NoteBody)
                 && string.IsNullOrEmpty(dto.CurrentDate) && dto.TypeSummary is not null)
                 return (null, new ValidationError("Your dto is in an invalid state! Some required fields are invalid!"));
             return (Note.UpdateNote(dto), null);
         }
+    }
+    
+    extension(NoteType noteType)
+    {
+        public NoteTypeSummaryDto MapToNoteTypeSummaryDto() =>
+            new(noteType.Id, noteType.Name, noteType.Description, noteType.ColorCode);   
     }
 }
 

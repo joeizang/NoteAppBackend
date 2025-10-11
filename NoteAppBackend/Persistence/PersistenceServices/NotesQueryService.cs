@@ -56,4 +56,13 @@ public static class NotesQueryService
             .OrderByDescending(t => t.CreatedAt)
             .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
             );
+
+    public static readonly Func<NoteAppBackendContext, Guid, NoteTypeSummaryDto?> GetNoteTypeById
+        = EF.CompileQuery(
+            static (NoteAppBackendContext context, Guid id) =>
+            context.NoteTypes.AsNoTracking()
+            .Where(t => t.Id.Equals(id))
+            .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
+            .SingleOrDefault()
+        );
 }
