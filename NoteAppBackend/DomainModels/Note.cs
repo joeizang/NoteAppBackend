@@ -20,6 +20,10 @@ public sealed class Note : AggregateRoot
 
     public Guid NoteTypeId { get; set; }
 
+    public ApplicationUser NoteOwner { get; set; }
+
+    public string NoteOwnerId { get; set; } = string.Empty;
+
     public List<string> Media { get; set; } = [];
 
     public static Note Create(NoteCreationDto dto)
