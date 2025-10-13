@@ -1,6 +1,5 @@
 ﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
 using NoteAppBackend.Kernel.Common;
 
 namespace NoteAppBackend.Persistence.PersistenceServices;
@@ -56,7 +55,7 @@ public class CommandService<T> : ICommandService<T> where T: BaseEntity
     {
         try
         {
-            entity.UpdatedAt = Instant.FromDateTimeUtc(DateTime.UtcNow);
+            entity.UpdatedAt = TimeOnly.FromDateTime(DateTime.UtcNow);
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync().ConfigureAwait(false);
             return new Result<T>(entity);

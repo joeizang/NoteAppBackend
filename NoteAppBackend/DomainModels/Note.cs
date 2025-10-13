@@ -14,7 +14,7 @@ public sealed class Note : AggregateRoot
 
     public string NoteBody { get; set; } = string.Empty;
 
-    public Instant NoteDate { get; set; } = default!;
+    public DateOnly NoteDate { get; set; } = default!;
 
     public NoteType Type { get; set; } = null!;
 

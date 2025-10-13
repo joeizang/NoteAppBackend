@@ -6,15 +6,18 @@ namespace NoteAppBackend.Persistence.PersistenceServices;
 
 public static class NotesQueryService
 {
-    public static readonly Func<NoteAppBackendContext, List<NoteSummaryDto>> GetAllNotes
-        = EF.CompileQuery(
-            (NoteAppBackendContext context) =>
-            context.Notes.AsNoTracking()
-                .Include(n => n.Type)
-                .OrderByDescending(n => n.Id)
-                .Select(n => n.MapNoteToNoteSummaryDto())
-                .ToList()
-        );
+    public static readonly Func<NoteAppBackendContext, dynamic> GetAllNotes
+        = EF.CompileQuery((NoteAppBackendContext context) => context.Notes.AsNoTracking()
+                  .Select(n => new NoteSummaryDto(n.Id, n.NoteTitle, n.CreatedOn.ToLongDateString(),
+                    new NoteTypeSummaryDto(n.Type.Id, n.Type.Name, n.Type.Description, n.Type.ColorCode))));
+        // = EF.CompileQuery(
+        //     (NoteAppBackendContext context) =>
+        //     context.Notes.AsNoTracking()
+        //         .Include(n => n.Type)
+        //         // .OrderByDescending(n => n.Id)
+        //         .Select(n => n.MapNoteToNoteSummaryDto())
+        //         .ToList()
+        // );
 
     public static readonly Func<NoteAppBackendContext, TimeOnly, IEnumerable<NotePagedSummary>> GetPagedNotes
         = EF.CompileQuery(
