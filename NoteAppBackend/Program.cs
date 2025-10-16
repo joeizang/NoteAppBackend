@@ -4,6 +4,7 @@ using dotenv.net;
 using NoteAppBackend.DomainModels;
 using NoteAppBackend.Persistence.DataGenerators;
 using NoteAppBackend.ApiEndpoints;
+using Microsoft.AspNetCore.Components.Web;
 
 DotEnv.Load();
 var env = DotEnv.Read();
@@ -40,9 +41,7 @@ builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
