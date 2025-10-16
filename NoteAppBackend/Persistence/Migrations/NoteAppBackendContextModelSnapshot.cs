@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NodaTime;
 using NoteAppBackend.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -235,8 +234,11 @@ namespace NoteAppBackend.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("CreatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("CreatedOn")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -249,8 +251,8 @@ namespace NoteAppBackend.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Instant>("NoteDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("NoteDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("NoteOwnerId")
                         .IsRequired()
@@ -264,8 +266,11 @@ namespace NoteAppBackend.Persistence.Migrations
                     b.Property<Guid>("NoteTypeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Instant>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("UpdatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("UpdatedOn")
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 
@@ -295,8 +300,11 @@ namespace NoteAppBackend.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("CreatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("CreatedOn")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -311,8 +319,11 @@ namespace NoteAppBackend.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Instant>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<TimeOnly>("UpdatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("UpdatedOn")
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 
@@ -329,6 +340,12 @@ namespace NoteAppBackend.Persistence.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<TimeOnly>("CreatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("CreatedOn")
+                        .HasColumnType("date");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -340,6 +357,12 @@ namespace NoteAppBackend.Persistence.Migrations
                     b.Property<string>("NickName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<TimeOnly>("UpdatedAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly>("UpdatedOn")
+                        .HasColumnType("date");
 
                     b.Property<string>("UserProfileImage")
                         .IsRequired()
@@ -404,7 +427,7 @@ namespace NoteAppBackend.Persistence.Migrations
                     b.HasOne("NoteAppBackend.DomainModels.ApplicationUser", "NoteOwner")
                         .WithMany("UserNotes")
                         .HasForeignKey("NoteOwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("NoteAppBackend.DomainModels.NoteType", "Type")

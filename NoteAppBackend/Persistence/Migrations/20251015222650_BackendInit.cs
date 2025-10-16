@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
-using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -9,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NoteAppBackend.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AppInit : Migration
+    public partial class BackendInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,10 +33,14 @@ namespace NoteAppBackend.Persistence.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
-                    FirstName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    LastName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NickName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    NickName = table.Column<string>(type: "text", nullable: true),
                     UserProfileImage = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateOnly>(type: "date", nullable: true),
+                    CreatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    UpdatedOn = table.Column<DateOnly>(type: "date", nullable: true),
+                    UpdatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -67,8 +70,10 @@ namespace NoteAppBackend.Persistence.Migrations
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     ColorCode = table.Column<string>(type: "text", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    CreatedOn = table.Column<DateOnly>(type: "date", nullable: false),
+                    CreatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    UpdatedOn = table.Column<DateOnly>(type: "date", nullable: false),
+                    UpdatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -188,13 +193,15 @@ namespace NoteAppBackend.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     NoteTitle = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     NoteBody = table.Column<string>(type: "text", nullable: false),
-                    NoteDate = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    NoteDate = table.Column<DateOnly>(type: "date", nullable: false),
                     NoteTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     NoteOwnerId = table.Column<string>(type: "text", nullable: false),
                     Media = table.Column<List<string>>(type: "text[]", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    CreatedOn = table.Column<DateOnly>(type: "date", nullable: false),
+                    CreatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    UpdatedOn = table.Column<DateOnly>(type: "date", nullable: false),
+                    UpdatedAt = table.Column<TimeOnly>(type: "time without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,8 +210,7 @@ namespace NoteAppBackend.Persistence.Migrations
                         name: "FK_Notes_AspNetUsers_NoteOwnerId",
                         column: x => x.NoteOwnerId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Notes_NoteTypes_NoteTypeId",
                         column: x => x.NoteTypeId,

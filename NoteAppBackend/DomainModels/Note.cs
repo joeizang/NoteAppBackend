@@ -32,7 +32,9 @@ public sealed class Note : AggregateRoot
         {
             NoteTitle = dto.NoteTitle,
             NoteBody = dto.NoteBody,
-            Type = NoteType.Create(dto.TypeDto)
+            Type = NoteType.Create(dto.TypeDto),
+            CreatedAt = TimeOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime),
+            CreatedOn = DateOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime)
         };
     }
 
@@ -43,7 +45,8 @@ public sealed class Note : AggregateRoot
             Id = dto.NoteId,
             NoteTitle = dto.Title,
             NoteBody = dto.NoteBody,
-            UpdatedAt = TimeOnly.FromDateTime(DateTime.Parse(dto.CurrentDate))
+            UpdatedAt = TimeOnly.FromDateTime(DateTime.Parse(dto.CurrentDate)),
+            UpdatedOn = DateOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime)
         };
     }
 }

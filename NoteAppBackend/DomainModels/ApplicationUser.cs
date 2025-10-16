@@ -12,6 +12,11 @@ public class ApplicationUser : IdentityUser
     public string NickName { get; set; } = string.Empty;
 
     public string UserProfileImage { get; set; } = string.Empty;
-    
+
     public List<Note> UserNotes { get; set; } = [];
+    
+    public DateOnly CreatedOn { get; set; }
+    public TimeOnly CreatedAt { get; set; }
+    public DateOnly UpdatedOn { get; set; }
+    public TimeOnly UpdatedAt { get; set; }
 }
