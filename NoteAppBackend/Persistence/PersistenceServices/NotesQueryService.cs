@@ -43,8 +43,8 @@ public static class NotesQueryService
             static (NoteAppBackendContext context, string searchParam) =>
             context.Notes.AsNoTracking()
                 .Include(n => n.Type)
-                .Where(n => EF.Functions.ILike(n.NoteBody, $"%{searchParam}%") ||
-                    EF.Functions.ILike(n.NoteTitle, $"%{searchParam}%"))
+                //.Where(n => EF.Functions.ILike(n.NoteBody, $"%{searchParam}%") ||
+                //    EF.Functions.ILike(n.NoteTitle, $"%{searchParam}%"))
                 .OrderByDescending(n => n.Id)
                 .Select(static n => n.MapNoteToNoteDto())
                 .Take(20)

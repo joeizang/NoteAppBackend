@@ -5,6 +5,7 @@ using NoteAppBackend.DomainModels;
 using NoteAppBackend.Persistence.DataGenerators;
 using NoteAppBackend.ApiEndpoints;
 using Microsoft.AspNetCore.Components.Web;
+using NoteAppBackend.Persistence.PersistenceServices;
 
 DotEnv.Load();
 var env = DotEnv.Read();
@@ -14,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
 {
     // opt.UseModel(NoteAppBackendContextModel.Instance);
-    opt.UseNpgsql(env["POSTGRES_CONN_STRING"])
+    //opt.UseNpgsql(env["POSTGRES_CONN_STRING"])
+    opt.UseSqlite(env["SQLITE_CONN_STRING"] ?? "Data Source=noteapp.db")
     .UseSeeding(async (context, _) =>
         {
             var test = context.Set<NoteType>().Any();
@@ -38,6 +40,8 @@ builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
             }
         });
 });
+builder.Services.AddScoped<ICommandService<Note>, CommandService<Note>>();
+builder.Services.AddScoped<ICommandService<NoteType>, CommandService<NoteType>>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
