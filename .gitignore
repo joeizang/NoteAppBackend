@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /NoteAppBackend/notesdb
 /NoteAppBackend/notesdb-shm
 /NoteAppBackend/notesdb-wal
+/NoteAppBackend/.env
