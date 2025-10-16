@@ -1,5 +1,4 @@
-﻿using NodaTime;
-using NoteAppBackend.DomainModels.DataTransferObjects;
+﻿using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Kernel.Common;
 
 namespace NoteAppBackend.DomainModels;

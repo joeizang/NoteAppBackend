@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace NoteAppBackend.Kernel.Common;
+﻿namespace NoteAppBackend.Kernel.Common;
 
 public abstract class BaseEntity
 {

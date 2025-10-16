@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NodaTime;
 using NoteAppBackend.DomainModels.DataTransferObjects;
 
 namespace NoteAppBackend.Persistence.PersistenceServices;

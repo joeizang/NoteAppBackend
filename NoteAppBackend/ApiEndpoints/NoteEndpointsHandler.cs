@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 using NoteAppBackend.DomainModels;
 using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Persistence;
