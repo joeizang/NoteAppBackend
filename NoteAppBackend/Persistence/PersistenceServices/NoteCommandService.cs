@@ -1,68 +1,124 @@
-﻿using LanguageExt.Common;
+﻿using System.IO.Compression;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
+using NoteAppBackend.DomainModels;
+using NoteAppBackend.DomainModels.DataTransferObjects;
 using NoteAppBackend.Kernel.Common;
 
 namespace NoteAppBackend.Persistence.PersistenceServices;
 
-public interface ICommandService<T> where T : BaseEntity
+public interface ICommandService
 {
-    Task<Result<T>> Create(T entity);
+    Task<Result<Note>> Create(Note entity);
+    Task<Result<NoteType>> CreateNoteType(NoteType entity);
 
-    Task<Result<T>> Update(T entity);
+    Task<Result<Note>> Update(NoteUpdateDto entity);
+    Task<Result<NoteType>> UpdateNoteType(NoteType entity);
 
-    Task<Result<T>> Delete(Guid id);
+    Task DeleteNote(Guid id);
+    Task DeleteNoteType(Guid id);
 }
 
-public class CommandService<T> : ICommandService<T> where T: BaseEntity
+public class CommandService : ICommandService
 {
     private readonly NoteAppBackendContext _db;
-    private DbSet<T> _set;
     public CommandService(NoteAppBackendContext context)
     {
         _db = context;
-        _set = _db.Set<T>();
     }
-    public async Task<Result<T>> Create(T entity)
+    public async Task<Result<Note>> Create(Note entity)
     {
         try
         {
-            _set.Add(entity);
+            _db.Notes.Add(entity);
             await _db.SaveChangesAsync().ConfigureAwait(false);
-            return new Result<T>(entity);
+            return new Result<Note>(entity);
         }
         catch (Exception ex)
         {
-            return new Result<T>(ex);
+            return new Result<Note>(ex);
         }
     }
-
-    public async Task<Result<T>> Delete(Guid id)
+    public async Task<Result<NoteType>> CreateNoteType(NoteType entity)
     {
         try
         {
-            var result = await _set.Where(x => x.Id == id)
+            _db.NoteTypes.Add(entity);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
+            return new Result<NoteType>(entity);
+        }
+        catch (Exception ex)
+        {
+            return new Result<NoteType>(ex);
+        }
+    }
+
+    public async Task DeleteNote(Guid id)
+    {
+        try
+        {
+            var result = await _db.Notes.Where(x => x.Id == id)
                 .ExecuteUpdateAsync(x => x.SetProperty(s => s.IsDeleted, true))
                 .ConfigureAwait(false);
-            return new Result<T>();
+            // return new Result<Note>();
         }
         catch (Exception ex)
         {
-            return new Result<T>(ex);
+            // return new Result<Note>(ex);
+            throw;
         }
     }
 
-    public async Task<Result<T>> Update(T entity)
+    public async Task DeleteNoteType(Guid id)
     {
         try
         {
-            entity.UpdatedAt = TimeOnly.FromDateTime(DateTime.UtcNow);
-            _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync().ConfigureAwait(false);
-            return new Result<T>(entity);
+            var result = await _db.NoteTypes.Where(x => x.Id == id)
+                .ExecuteUpdateAsync(x => x.SetProperty(s => s.IsDeleted, true))
+                .ConfigureAwait(false);
+            //return new Result<NoteType>();
         }
         catch (Exception ex)
         {
-            return new Result<T>(ex);
+            throw;
+            // return new Result<NoteType>(ex);
+        }
+    }
+
+    public async Task<Result<Note>> Update(NoteUpdateDto entity)
+    {
+        try
+        {
+            // entity.UpdatedAt = TimeOnly.FromDateTime(DateTime.UtcNow);
+            // _db.Entry(entity).State = EntityState.Modified;
+            // await _db.SaveChangesAsync().ConfigureAwait(false);
+            var newMediaList = 
+            await _db.Notes.Where(x => x.Id == entity.NoteId)
+                .ExecuteUpdateAsync(note => note
+                    .SetProperty(n => n.NoteTitle, entity.Title)
+                    .SetProperty(n => n.NoteBody, entity.NoteBody)
+                    .SetProperty(n => n.Media, entity.Media)
+                    .SetProperty(n => n.UpdatedAt, DateTime.UtcNow)
+                );
+            return new Result<Note>();
+        }
+        catch (Exception ex)
+        {
+            return new Result<Note>(ex);
+        }
+    }
+    public async Task<Result<NoteType>> UpdateNoteType(NoteType entity)
+    {
+        try
+        {
+            entity.UpdatedAt = DateTime.UtcNow;
+            _db.Entry(entity).State = EntityState.Modified;
+            await _db.SaveChangesAsync().ConfigureAwait(false);
+            return new Result<NoteType>(entity);
+        }
+        catch (Exception ex)
+        {
+            return new Result<NoteType>(ex);
         }
     }
 }

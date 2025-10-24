@@ -6,18 +6,18 @@ public abstract class BaseEntity
 
     public bool IsDeleted { get; set; }
 
-    public DateOnly CreatedOn { get; set; }
-    public TimeOnly CreatedAt { get; set; }
-    public DateOnly UpdatedOn { get; set; }
-    public TimeOnly UpdatedAt { get; set; }
+    // public DateOnly CreatedOn { get; set; }
+    public DateTime CreatedAt { get; set; }
+    // public DateOnly UpdatedOn { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     protected BaseEntity(Guid? id)
     {
         Id = id ?? Ulid.NewUlid(DateTimeOffset.Now).ToGuid();
-        CreatedOn = DateOnly.FromDateTime(DateTime.Today);
-        CreatedAt = TimeOnly.FromDateTime(DateTime.Today);
+        CreatedAt = DateTime.Now;
+        // CreatedAt = TimeOnly.FromDateTime(DateTime.Today);
         UpdatedAt = CreatedAt;
-        UpdatedOn = CreatedOn;
+        // UpdatedOn = CreatedOn;
     }
 
     protected BaseEntity() { }

@@ -8,7 +8,7 @@ public static class NoteEndpoints
 
         group.MapGet("/all", NoteEndpointsHandler.GetAllNotes);
         group.MapGet("/{id:guid}", NoteEndpointsHandler.GetNoteById);
-        group.MapGet("", NoteEndpointsHandler.GetPagedNotes);
+        group.MapGet("/{cursor}", NoteEndpointsHandler.GetPagedNotes);
 
         group.MapPost("", NoteEndpointsHandler.CreateNote);
         group.MapPut("/{id:guid}", NoteEndpointsHandler.UpdateNote);

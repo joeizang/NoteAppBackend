@@ -40,8 +40,7 @@ builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
             }
         });
 });
-builder.Services.AddScoped<ICommandService<Note>, CommandService<Note>>();
-builder.Services.AddScoped<ICommandService<NoteType>, CommandService<NoteType>>();
+builder.Services.AddScoped<ICommandService, CommandService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

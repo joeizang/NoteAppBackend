@@ -13,7 +13,7 @@ public class ApplicationUser : IdentityUser
 
     public string UserProfileImage { get; set; } = string.Empty;
 
-    public List<Note> UserNotes { get; set; } = [];
+    // public List<Note> UserNotes { get; set; } = [];
     
     public DateOnly CreatedOn { get; set; }
     public TimeOnly CreatedAt { get; set; }

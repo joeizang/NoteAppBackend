@@ -1,18 +1,17 @@
 ﻿namespace NoteAppBackend.DomainModels.DataTransferObjects;
 
-public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, NoteTypeCreationDto TypeDto);
+public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, Guid NoteTypeId);
 
-public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
+public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, Guid NoteTypeId);
 
 public record NoteTypeSummaryDto(Guid TypeId, string TypeName, string Description, string TypeColorCode);
 
 public record NotePagedSummary(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
 
 public record NoteDto(Guid NoteId, string Title, string NoteBody,
-    NoteTypeSummaryDto TypeSummary, string UpdatedAt);
+    Guid NoteTypeId, string UpdatedAt);
 
-public record NoteUpdateDto(Guid NoteId, string Title, string NoteBody, 
-    string CurrentDate, NoteTypeSummaryDto TypeSummary);
+public record NoteUpdateDto(Guid NoteId, string Title, string NoteBody, List<string> Media, Guid NoteTypeId);
 
 
 public static class DtoExtensions
@@ -20,15 +19,12 @@ public static class DtoExtensions
     extension(Note note)
     {
         public NoteSummaryDto MapNoteToNoteSummaryDto() =>
-            new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(),
-                new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode));
+            new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId);
 
-        public NotePagedSummary MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(),
-                new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode));
+        public NoteSummaryDto MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId);
 
         public NoteDto MapNoteToNoteDto() => new(note.Id, note.NoteTitle, note.NoteBody,
-            new NoteTypeSummaryDto(note.Type.Id, note.Type.Name, note.Type.Description, note.Type.ColorCode),
-            note.UpdatedAt.ToString());
+            note.NoteTypeId, note.UpdatedAt.ToString());
     }
 
     extension(NoteUpdateDto)
@@ -37,8 +33,7 @@ public static class DtoExtensions
         {
             if (dto is null)
                 return (null, new ValidationError("Your dto is in an invalid state!"));
-            if (string.IsNullOrEmpty(dto.Title) && string.IsNullOrEmpty(dto.NoteBody)
-                && string.IsNullOrEmpty(dto.CurrentDate) && dto.TypeSummary is not null)
+            if (string.IsNullOrEmpty(dto.Title) && string.IsNullOrEmpty(dto.NoteBody))
                 return (null, new ValidationError("Your dto is in an invalid state! Some required fields are invalid!"));
             return (Note.UpdateNote(dto), null);
         }

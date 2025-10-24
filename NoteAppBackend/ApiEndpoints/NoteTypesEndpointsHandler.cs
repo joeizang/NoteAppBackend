@@ -12,31 +12,41 @@ namespace NoteAppBackend.ApiEndpoints;
 public static class NoteTypesEndpointHandler
 {
     internal static async Task<IResult> CreateNoteType([FromServices] NoteAppBackendContext context,
-        [FromBody] NoteTypeCreationDto dto, [FromServices] ICommandService<NoteType> command, CancellationToken token)
+        [FromBody] NoteTypeCreationDto dto, [FromServices] ICommandService command, CancellationToken token)
     {
         var noteType = NoteType.Create(dto);
-        var result = await command.Create(noteType).ConfigureAwait(false);
+        var result = await command.CreateNoteType(noteType).ConfigureAwait(false);
         return result.Match<IResult>(
             (r) => TypedResults.Ok(new NoteTypeSummaryDto(r.Id, r.Name, r.Description, r.ColorCode)),
             (e) => TypedResults.BadRequest(e.Message)
         );
     }
 
-    internal static async Task<IResult> DeleteNoteType([FromServices] ICommandService<NoteType> command, Guid id)
+    internal static async Task<IResult> DeleteNoteType([FromServices] NoteAppBackendContext db, Guid id)
     {
-        var result = await command.Delete(id).ConfigureAwait(false);
-        return result.Match<IResult>(
-            (r) => TypedResults.Ok(),
-            (e) => TypedResults.BadRequest("Could not perform delete because NoteType was not found!")
-        );
+        try
+        {
+            var note = await db.NoteTypes.SingleOrDefaultAsync(x => x.Id == id)
+                .ConfigureAwait(false);
+            if (note is null) return TypedResults.NotFound();
+            db.NoteTypes.Remove(note);
+            await db.SaveChangesAsync().ConfigureAwait(false);
+            return TypedResults.Ok();
+        }
+        catch (Exception ex)
+        {
+            return TypedResults.BadRequest("Deletion Failed!");
+        }
     }
 
     internal static IResult GetAllNoteTypes([FromServices] NoteAppBackendContext context)
     {
-        // var result = NotesQueryService.GetNoteTypes(context);
+        // var result = NotesQueryService.GetNoteAllTypes(context);
         var result = context.NoteTypes.AsNoTracking()
-            // .OrderByDescending(t => t.CreatedAt)
-            .Select(t => new { t.Id, t.Name, t.Description, t.ColorCode }).ToArray();
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new { t.Id, t.Name, t.Description, t.ColorCode })
+            .Take(10)
+            .ToArray();
         return result.Length < 1 ? TypedResults.Ok<List<NoteSummaryDto>>([]) : TypedResults.Ok(result);
     }
 

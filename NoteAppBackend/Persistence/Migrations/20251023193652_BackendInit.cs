@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NoteAppBackend.Persistence.MIgrations
+namespace NoteAppBackend.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class BackendInit : Migration
@@ -30,15 +30,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
-                    LastName = table.Column<string>(type: "TEXT", nullable: true),
-                    NickName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserProfileImage = table.Column<string>(type: "TEXT", nullable: true),
-                    CreatedOn = table.Column<DateOnly>(type: "TEXT", nullable: true),
-                    CreatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: true),
-                    UpdatedOn = table.Column<DateOnly>(type: "TEXT", nullable: true),
-                    UpdatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -60,6 +51,25 @@ namespace NoteAppBackend.Persistence.MIgrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    NoteTitle = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    NoteBody = table.Column<string>(type: "TEXT", maxLength: 2500, nullable: false),
+                    NoteDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    NoteTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Media = table.Column<string>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "NoteTypes",
                 columns: table => new
                 {
@@ -68,10 +78,8 @@ namespace NoteAppBackend.Persistence.MIgrations
                     Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     ColorCode = table.Column<string>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedOn = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: false),
-                    UpdatedOn = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,38 +192,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Notes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    NoteTitle = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    NoteBody = table.Column<string>(type: "TEXT", nullable: false),
-                    NoteDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    NoteTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    NoteOwnerId = table.Column<string>(type: "TEXT", nullable: false),
-                    Media = table.Column<string>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedOn = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: false),
-                    UpdatedOn = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<TimeOnly>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notes_AspNetUsers_NoteOwnerId",
-                        column: x => x.NoteOwnerId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Notes_NoteTypes_NoteTypeId",
-                        column: x => x.NoteTypeId,
-                        principalTable: "NoteTypes",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -269,20 +245,9 @@ namespace NoteAppBackend.Persistence.MIgrations
                 column: "NoteDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notes_NoteOwnerId",
-                table: "Notes",
-                column: "NoteOwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notes_NoteTitle",
                 table: "Notes",
                 column: "NoteTitle");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_NoteTypeId",
-                table: "Notes",
-                column: "NoteTypeId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NoteTypes_ColorCode",
@@ -322,13 +287,13 @@ namespace NoteAppBackend.Persistence.MIgrations
                 name: "Notes");
 
             migrationBuilder.DropTable(
+                name: "NoteTypes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "NoteTypes");
         }
     }
 }

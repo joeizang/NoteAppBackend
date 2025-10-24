@@ -13,27 +13,29 @@ public sealed class Note : AggregateRoot
 
     public string NoteBody { get; set; } = string.Empty;
 
-    public DateOnly NoteDate { get; set; } = default!;
-
-    public NoteType Type { get; set; } = null!;
+    public DateTime NoteDate { get; set; } = default!;
 
     public Guid NoteTypeId { get; set; }
 
-    public ApplicationUser NoteOwner { get; set; }
+    // public ApplicationUser NoteOwner { get; set; }
 
-    public string NoteOwnerId { get; set; } = string.Empty;
+    // public string NoteOwnerId { get; set; } = string.Empty;
 
     public List<string> Media { get; set; } = [];
 
     public static Note Create(NoteCreationDto dto)
     {
+        var dtoDate = DateTime.Parse(dto.Date);
+        var currentOpDate = DateTime.Now;
         return new Note
         {
             NoteTitle = dto.NoteTitle,
             NoteBody = dto.NoteBody,
-            Type = NoteType.Create(dto.TypeDto),
-            CreatedAt = TimeOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime),
-            CreatedOn = DateOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime)
+            NoteTypeId = dto.NoteTypeId,
+            NoteDate = DateTime.SpecifyKind(dtoDate, DateTimeKind.Utc),
+            // NoteOwnerId = Ulid.NewUlid().ToGuid().ToString(),
+            CreatedAt = currentOpDate,
+            UpdatedAt = currentOpDate
         };
     }
 
@@ -44,8 +46,8 @@ public sealed class Note : AggregateRoot
             Id = dto.NoteId,
             NoteTitle = dto.Title,
             NoteBody = dto.NoteBody,
-            UpdatedAt = TimeOnly.FromDateTime(DateTime.Parse(dto.CurrentDate)),
-            UpdatedOn = DateOnly.FromDateTime(DateTimeOffset.UtcNow.LocalDateTime)
+            NoteTypeId = dto.NoteTypeId,
+            UpdatedAt = DateTime.Now
         };
     }
 }

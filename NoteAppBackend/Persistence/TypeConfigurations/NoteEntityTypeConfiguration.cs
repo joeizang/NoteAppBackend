@@ -10,20 +10,24 @@ public sealed class NoteEntityTypeConfiguration : IEntityTypeConfiguration<Note>
     {
         builder.HasKey(n => n.Id);
 
-        builder.HasOne(n => n.Type)
-            .WithOne()
-            .IsRequired()
-            .OnDelete(DeleteBehavior.NoAction);
-        builder.HasOne(n => n.NoteOwner)
-            .WithMany(o => o.UserNotes)
-            .HasForeignKey(n => n.NoteOwnerId)
-            .OnDelete(DeleteBehavior.NoAction);
+        // builder.HasOne(n => n.Type)
+        //     .WithOne()
+        //     .IsRequired()
+        //     .OnDelete(DeleteBehavior.NoAction);
+        // builder.HasOne(n => n.NoteOwner)
+        //     .WithMany(o => o.UserNotes)
+        //     .HasForeignKey(n => n.NoteOwnerId)
+        //     .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Property(n => n.NoteTypeId)
+            .IsRequired();
 
         builder.Property(n => n.NoteTitle)
             .IsRequired()
             .HasMaxLength(200);
 
         builder.Property(n => n.NoteBody)
+            .HasMaxLength(2500)
             .IsRequired();
 
         builder.Property(n => n.NoteDate)

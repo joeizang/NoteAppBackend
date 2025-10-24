@@ -8,10 +8,10 @@ using NoteAppBackend.Persistence;
 
 #nullable disable
 
-namespace NoteAppBackend.Persistence.MIgrations
+namespace NoteAppBackend.Persistence.Migrations
 {
     [DbContext(typeof(NoteAppBackendContext))]
-    [Migration("20251016104118_BackendInit")]
+    [Migration("20251023193652_BackendInit")]
     partial class BackendInit
     {
         /// <inheritdoc />
@@ -81,11 +81,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
@@ -136,10 +131,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -227,10 +218,7 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("CreatedOn")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -242,13 +230,10 @@ namespace NoteAppBackend.Persistence.MIgrations
 
                     b.Property<string>("NoteBody")
                         .IsRequired()
+                        .HasMaxLength(2500)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly>("NoteDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NoteOwnerId")
-                        .IsRequired()
+                    b.Property<DateTime>("NoteDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NoteTitle")
@@ -259,10 +244,7 @@ namespace NoteAppBackend.Persistence.MIgrations
                     b.Property<Guid>("NoteTypeId")
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("UpdatedOn")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -273,12 +255,7 @@ namespace NoteAppBackend.Persistence.MIgrations
 
                     b.HasIndex("NoteDate");
 
-                    b.HasIndex("NoteOwnerId");
-
                     b.HasIndex("NoteTitle");
-
-                    b.HasIndex("NoteTypeId")
-                        .IsUnique();
 
                     b.ToTable("Notes");
                 });
@@ -293,10 +270,7 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("CreatedOn")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -312,10 +286,7 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("UpdatedOn")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -327,41 +298,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                     b.HasIndex("Name");
 
                     b.ToTable("NoteTypes");
-                });
-
-            modelBuilder.Entity("NoteAppBackend.DomainModels.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<TimeOnly>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("CreatedOn")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NickName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeOnly>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("UpdatedOn")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserProfileImage")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -413,30 +349,6 @@ namespace NoteAppBackend.Persistence.MIgrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("NoteAppBackend.DomainModels.Note", b =>
-                {
-                    b.HasOne("NoteAppBackend.DomainModels.ApplicationUser", "NoteOwner")
-                        .WithMany("UserNotes")
-                        .HasForeignKey("NoteOwnerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("NoteAppBackend.DomainModels.NoteType", "Type")
-                        .WithOne()
-                        .HasForeignKey("NoteAppBackend.DomainModels.Note", "NoteTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("NoteOwner");
-
-                    b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("NoteAppBackend.DomainModels.ApplicationUser", b =>
-                {
-                    b.Navigation("UserNotes");
                 });
 #pragma warning restore 612, 618
         }
