@@ -21,11 +21,7 @@ Content-Type: application/json
   "NoteTitle": "Notes from Dr. Miles Munroe",
   "NoteBody": "Motivation is an emotion, it is fickle and doesn't last...",
   "Date": "10/15/2025",
-  "TypeDto": {
-    "TypeName": "Musings from Speakers",
-    "TypeDescription": "Learnings from Messages",
-    "ColorCode": "#8A7F44"
-  }
+  "NoteTypeId": "" 
 }
 
 ###

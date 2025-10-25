@@ -1,12 +1,15 @@
-﻿namespace NoteAppBackend.DomainModels.DataTransferObjects;
+﻿using NoteAppBackend.Kernel.Helpers;
+
+namespace NoteAppBackend.DomainModels.DataTransferObjects;
 
 public record NoteCreationDto(string NoteTitle, string NoteBody, string Date, Guid NoteTypeId);
 
-public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, Guid NoteTypeId);
+public record NoteSummaryDto(Guid NoteId, string Title, string NoteDate, Guid NoteTypeId, string Cursor);
 
-public record NoteTypeSummaryDto(Guid TypeId, string TypeName, string Description, string TypeColorCode);
+public record NoteTypeSummaryDto(Guid TypeId, string TypeName, string Description, string TypeColorCode,
+    string Cursor);
 
-public record NotePagedSummary(Guid NoteId, string Title, string NoteDate, NoteTypeSummaryDto TypeSummary);
+public record NotePagedSummary(Guid NoteId, string Title, string NoteDate, string ColorCode, string Cursor);
 
 public record NoteDto(Guid NoteId, string Title, string NoteBody,
     Guid NoteTypeId, string UpdatedAt);
@@ -19,9 +22,10 @@ public static class DtoExtensions
     extension(Note note)
     {
         public NoteSummaryDto MapNoteToNoteSummaryDto() =>
-            new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId);
+            new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId,
+            NoteAppHelper.Encode(note.CreatedAt));
 
-        public NoteSummaryDto MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId);
+        public NoteSummaryDto MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId, NoteAppHelper.Encode(note.CreatedAt));
 
         public NoteDto MapNoteToNoteDto() => new(note.Id, note.NoteTitle, note.NoteBody,
             note.NoteTypeId, note.UpdatedAt.ToString());
@@ -42,7 +46,8 @@ public static class DtoExtensions
     extension(NoteType noteType)
     {
         public NoteTypeSummaryDto MapToNoteTypeSummaryDto() =>
-            new(noteType.Id, noteType.Name, noteType.Description, noteType.ColorCode);   
+            new(noteType.Id, noteType.Name, noteType.Description, noteType.ColorCode,
+            NoteAppHelper.Encode(noteType.CreatedAt));   
     }
 }
 

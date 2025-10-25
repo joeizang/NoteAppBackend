@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NoteAppBackend.DomainModels.DataTransferObjects;
+using NoteAppBackend.Kernel.Helpers;
 
 namespace NoteAppBackend.Persistence.PersistenceServices;
 
@@ -8,7 +9,7 @@ public static class NotesQueryService
     public static readonly Func<NoteAppBackendContext, dynamic> GetAllNotes
         = EF.CompileQuery((NoteAppBackendContext context) => context.Notes.AsNoTracking()
                   .Select(n => new NoteSummaryDto(n.Id, n.NoteTitle, n.CreatedAt.ToLongDateString(),
-                  n.NoteTypeId)));
+                  n.NoteTypeId, NoteAppHelper.Encode(n.CreatedAt))));
         // = EF.CompileQuery(
         //     (NoteAppBackendContext context) =>
         //     context.Notes.AsNoTracking()
@@ -53,7 +54,8 @@ public static class NotesQueryService
             (NoteAppBackendContext context) =>
             context.NoteTypes.AsNoTracking()
             .OrderByDescending(t => t.Id)
-            .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
+            .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
+                NoteAppHelper.Encode(t.CreatedAt)))
             .ToArray());
 
     public static readonly Func<NoteAppBackendContext, Guid, NoteTypeSummaryDto?> GetNoteTypeById
@@ -61,7 +63,8 @@ public static class NotesQueryService
             static (NoteAppBackendContext context, Guid id) =>
             context.NoteTypes.AsNoTracking()
             .Where(t => t.Id.Equals(id))
-            .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode))
+            .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
+                NoteAppHelper.Encode(t.CreatedAt)))
             .SingleOrDefault()
         );
     
@@ -70,6 +73,7 @@ public static class NotesQueryService
             (NoteAppBackendContext context) =>
             context.NoteTypes.AsNoTracking()
             //  .OrderByDescending(t => t.Id)
-            .Select(t => new NoteTypeSummaryDto( t.Id, t.Name, t.Description, t.ColorCode )).ToArray()
+            .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
+                NoteAppHelper.Encode(t.CreatedAt))).ToArray()
         );
 }

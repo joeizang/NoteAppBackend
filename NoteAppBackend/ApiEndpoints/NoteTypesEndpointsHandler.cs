@@ -6,6 +6,7 @@ using NoteAppBackend.Persistence.PersistenceServices;
 using LanguageExt.Common;
 using NoteAppBackend.DomainModels;
 using Microsoft.EntityFrameworkCore;
+using NoteAppBackend.Kernel.Helpers;
 
 namespace NoteAppBackend.ApiEndpoints;
 
@@ -17,7 +18,8 @@ public static class NoteTypesEndpointHandler
         var noteType = NoteType.Create(dto);
         var result = await command.CreateNoteType(noteType).ConfigureAwait(false);
         return result.Match<IResult>(
-            (r) => TypedResults.Ok(new NoteTypeSummaryDto(r.Id, r.Name, r.Description, r.ColorCode)),
+            (r) => TypedResults.Ok(new NoteTypeSummaryDto(r.Id, r.Name, r.Description, r.ColorCode,
+                NoteAppHelper.Encode(r.CreatedAt))),
             (e) => TypedResults.BadRequest(e.Message)
         );
     }

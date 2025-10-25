@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NoteAppBackend.DomainModels;
 using NoteAppBackend.DomainModels.DataTransferObjects;
+using NoteAppBackend.Kernel.Helpers;
 using NoteAppBackend.Persistence;
 using NoteAppBackend.Persistence.PersistenceServices;
+using ZLinq;
 
 namespace NoteAppBackend.ApiEndpoints;
 
@@ -46,6 +48,7 @@ public static class NoteEndpointsHandler
                 .OrderByDescending(n => n.Id)
                 .Select(n => n.MapNoteToNoteSummaryDto())
                 .ToListAsync(token).ConfigureAwait(false);
+
         return result.Count < 1 ? TypedResults.Ok<List<NoteSummaryDto>>([]) : TypedResults.Ok(result);
     }
 
@@ -57,16 +60,12 @@ public static class NoteEndpointsHandler
         return result is null ? TypedResults.NotFound() : TypedResults.Ok(combined);
     }
 
-    internal static IResult GetPagedNotes([FromServices] NoteAppBackendContext context, [FromQuery] string cursor)
+    internal static IResult GetPagedNotes([FromServices] NoteAppBackendContext context, string cursor)
     {
-        var treated = Encoding.UTF8.GetString(Convert.FromBase64String(cursor));
+        var treated = NoteAppHelper.Decode(cursor);
         Console.WriteLine(treated);
-        var whatParts = treated.Split("|");
-        // Console.WriteLine(whatParts);
-        return TypedResults.NoContent();
-        var parseResult = DateTime.TryParse(cursor, out var cursorInstant);
-        if (parseResult == false) return TypedResults.BadRequest($"{cursor} is not a valid cursor!");
-        var result = NotesQueryService.GetPagedNotes(context, cursorInstant);
+
+        var result = NotesQueryService.GetPagedNotes(context, treated);
         return result is null ? TypedResults.Ok<List<NotePagedSummary>>([]) : TypedResults.Ok(result);
     }
 
