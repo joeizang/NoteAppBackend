@@ -74,12 +74,6 @@ public static class NoteEndpointsHandler
         string searchParam)
     {
         var result = NotesQueryService.GetNoteBySearchParameter(context, searchParam);
-        // var result = await context.Notes.AsNoTracking()
-        //     .Where(n => EF.Functions.Like(n.NoteBody, $"%{searchParam}%") ||
-        //         EF.Functions.Like(n.NoteTitle, $"%{searchParam}%"))
-        //     .Select(n => new { NoteId = n.Id, Title = n.NoteTitle })
-        //     .Take(2)
-        //     .ToListAsync().ConfigureAwait(false);
         return result is null ? TypedResults.Ok<List<NoteDto>>([]) : TypedResults.Ok(result);
     }
 

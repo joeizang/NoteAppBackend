@@ -98,7 +98,8 @@ public class CommandService : ICommandService
                     .SetProperty(n => n.NoteTitle, entity.Title)
                     .SetProperty(n => n.NoteBody, entity.NoteBody)
                     .SetProperty(n => n.Media, entity.Media)
-                    .SetProperty(n => n.UpdatedAt, DateTime.UtcNow)
+                    .SetProperty(n => n.UpdatedAt, TimeOnly.FromDateTime(DateTime.UtcNow))
+                    .SetProperty(n => n.UpdatedOn, DateOnly.FromDateTime(DateTime.UtcNow))
                 );
             return new Result<Note>();
         }
@@ -111,7 +112,8 @@ public class CommandService : ICommandService
     {
         try
         {
-            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = TimeOnly.FromDateTime(DateTime.UtcNow);
+            entity.UpdatedOn = DateOnly.FromDateTime(DateTime.UtcNow);
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync().ConfigureAwait(false);
             return new Result<NoteType>(entity);

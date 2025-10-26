@@ -14,7 +14,7 @@ public record NotePagedSummary(Guid NoteId, string Title, string NoteDate, strin
 public record NoteDto(Guid NoteId, string Title, string NoteBody,
     Guid NoteTypeId, string UpdatedAt);
 
-public record NoteUpdateDto(Guid NoteId, string Title, string NoteBody, List<string> Media, Guid NoteTypeId);
+public record NoteUpdateDto(Guid NoteId, string Title, string NoteBody, List<string> Media, Guid NoteTypeId, string UpdateDate);
 
 
 public static class DtoExtensions
@@ -23,9 +23,9 @@ public static class DtoExtensions
     {
         public NoteSummaryDto MapNoteToNoteSummaryDto() =>
             new NoteSummaryDto(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId,
-            NoteAppHelper.Encode(note.CreatedAt));
+            NoteAppHelper.Encode(note.Id));
 
-        public NoteSummaryDto MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId, NoteAppHelper.Encode(note.CreatedAt));
+        public NoteSummaryDto MaptNoteToNotePagedSummaryDto() => new(note.Id, note.NoteTitle, note.NoteDate.ToString(), note.NoteTypeId, NoteAppHelper.Encode(note.Id));
 
         public NoteDto MapNoteToNoteDto() => new(note.Id, note.NoteTitle, note.NoteBody,
             note.NoteTypeId, note.UpdatedAt.ToString());
@@ -47,7 +47,7 @@ public static class DtoExtensions
     {
         public NoteTypeSummaryDto MapToNoteTypeSummaryDto() =>
             new(noteType.Id, noteType.Name, noteType.Description, noteType.ColorCode,
-            NoteAppHelper.Encode(noteType.CreatedAt));   
+            NoteAppHelper.Encode(noteType.Id));   
     }
 }
 

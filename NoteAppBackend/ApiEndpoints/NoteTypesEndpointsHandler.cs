@@ -19,7 +19,7 @@ public static class NoteTypesEndpointHandler
         var result = await command.CreateNoteType(noteType).ConfigureAwait(false);
         return result.Match<IResult>(
             (r) => TypedResults.Ok(new NoteTypeSummaryDto(r.Id, r.Name, r.Description, r.ColorCode,
-                NoteAppHelper.Encode(r.CreatedAt))),
+                NoteAppHelper.Encode(r.Id))),
             (e) => TypedResults.BadRequest(e.Message)
         );
     }

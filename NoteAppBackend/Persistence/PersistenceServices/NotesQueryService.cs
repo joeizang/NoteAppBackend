@@ -8,14 +8,14 @@ public static class NotesQueryService
 {
     public static readonly Func<NoteAppBackendContext, dynamic> GetAllNotes
         = EF.CompileQuery((NoteAppBackendContext context) => context.Notes.AsNoTracking()
-                  .Select(n => new NoteSummaryDto(n.Id, n.NoteTitle, n.CreatedAt.ToLongDateString(),
-                  n.NoteTypeId, NoteAppHelper.Encode(n.CreatedAt))));
+                  .Select(n => new NoteSummaryDto(n.Id, n.NoteTitle, n.CreatedOn.ToLongDateString(),
+                  n.NoteTypeId, NoteAppHelper.Encode(n.Id))));
 
-    public static readonly Func<NoteAppBackendContext, DateTime, IEnumerable<NoteSummaryDto>> GetPagedNotes
+    public static readonly Func<NoteAppBackendContext, Guid, IEnumerable<NoteSummaryDto>> GetPagedNotes
         = EF.CompileQuery(
-            static (NoteAppBackendContext context, DateTime cursor) =>
+            static (NoteAppBackendContext context, Guid cursor) =>
             context.Notes.AsNoTracking()
-                .Where(n => n.CreatedAt > cursor)
+                .Where(n => n.Id > cursor)
                 .OrderByDescending(n => n.Id)
                 .Select(static n => n.MaptNoteToNotePagedSummaryDto()).Take(2)
             );
@@ -46,7 +46,7 @@ public static class NotesQueryService
             context.NoteTypes.AsNoTracking()
             .OrderByDescending(t => t.Id)
             .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
-                NoteAppHelper.Encode(t.CreatedAt)))
+                NoteAppHelper.Encode(t.Id)))
             .ToArray());
 
     public static readonly Func<NoteAppBackendContext, Guid, NoteTypeSummaryDto?> GetNoteTypeById
@@ -55,7 +55,7 @@ public static class NotesQueryService
             context.NoteTypes.AsNoTracking()
             .Where(t => t.Id.Equals(id))
             .Select(static t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
-                NoteAppHelper.Encode(t.CreatedAt)))
+                NoteAppHelper.Encode(t.Id)))
             .SingleOrDefault()
         );
     
@@ -65,6 +65,6 @@ public static class NotesQueryService
             context.NoteTypes.AsNoTracking()
              .OrderByDescending(t => t.CreatedAt)
             .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
-                NoteAppHelper.Encode(t.CreatedAt))).ToArray()
+                NoteAppHelper.Encode(t.Id))).ToArray()
         );
 }

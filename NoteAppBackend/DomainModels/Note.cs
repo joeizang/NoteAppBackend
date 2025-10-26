@@ -13,7 +13,7 @@ public sealed class Note : AggregateRoot
 
     public string NoteBody { get; set; } = string.Empty;
 
-    public DateTime NoteDate { get; set; } = default!;
+    public DateOnly NoteDate { get; set; } = default!;
 
     public Guid NoteTypeId { get; set; }
 
@@ -34,22 +34,25 @@ public sealed class Note : AggregateRoot
             NoteTitle = dto.NoteTitle,
             NoteBody = dto.NoteBody,
             NoteTypeId = dto.NoteTypeId,
-            NoteDate = DateTime.SpecifyKind(dtoDate, DateTimeKind.Utc),
+            NoteDate = DateOnly.FromDateTime(dtoDate),
             // NoteOwnerId = Ulid.NewUlid().ToGuid().ToString(),
-            CreatedAt = currentOpDate,
-            UpdatedAt = currentOpDate
+            CreatedOn = DateOnly.FromDateTime(currentOpDate),
+            UpdatedOn = DateOnly.FromDateTime(currentOpDate),
+            CreatedAt = TimeOnly.FromDateTime(currentOpDate),
+            UpdatedAt = TimeOnly.FromDateTime(currentOpDate)
         };
     }
 
     public static Note UpdateNote(NoteUpdateDto dto)
     {
+        var now = DateTime.Parse(dto.UpdateDate);
         return new Note
         {
             Id = dto.NoteId,
             NoteTitle = dto.Title,
             NoteBody = dto.NoteBody,
             NoteTypeId = dto.NoteTypeId,
-            UpdatedAt = DateTime.Now
+            UpdatedAt = TimeOnly.FromDateTime(now)
         };
     }
 }

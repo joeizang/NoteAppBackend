@@ -23,7 +23,8 @@ public sealed class NoteType : BaseEntity
             Name = dto.TypeName,
             Description = dto.Description,
             ColorCode = dto.TypeColorCode,
-            CreatedAt = DateTime.Now
+            CreatedAt = TimeOnly.FromDateTime(DateTime.Now),
+            CreatedOn = DateOnly.FromDateTime(DateTime.Now)
         };
     }
 
@@ -34,7 +35,8 @@ public sealed class NoteType : BaseEntity
             Name = dto.TypeName,
             Description = dto.TypeDescription,
             ColorCode = dto.ColorCode,
-            CreatedAt = DateTime.Now
+            CreatedAt = TimeOnly.FromDateTime(DateTime.Now),
+            CreatedOn = DateOnly.FromDateTime(DateTime.Now)
         };
     }
 }
