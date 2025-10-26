@@ -17,6 +17,8 @@ public sealed class Note : AggregateRoot
 
     public Guid NoteTypeId { get; set; }
 
+    public NoteType NoteType { get; set; } = null!;
+
     // public ApplicationUser NoteOwner { get; set; }
 
     // public string NoteOwnerId { get; set; } = string.Empty;

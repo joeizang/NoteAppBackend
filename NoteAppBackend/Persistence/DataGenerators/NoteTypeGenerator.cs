@@ -178,7 +178,7 @@ public class NoteTypeGenerator
 
     public IEnumerable<NoteType> GetNoteTypes()
     {
-        HashSet<NoteType> types = new();
+        HashSet<NoteType> types = [];
         List<NoteType> _types = [];
         var adjectivesCount = Adjectives.Distinct().Count();
         var nounCount = Nouns.Distinct().Count();

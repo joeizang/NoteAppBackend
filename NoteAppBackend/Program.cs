@@ -15,8 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<NoteAppBackendContext>(opt =>
 {
     // opt.UseModel(NoteAppBackendContextModel.Instance);
-    //opt.UseNpgsql(env["POSTGRES_CONN_STRING"])
-    opt.UseSqlite(env["SQLITE_CONN_STRING"] ?? "Data Source=noteapp.db")
+    opt.UseNpgsql(env["POSTGRES_CONN_STRING"])
+    // opt.UseSqlite(env["SQLITE_CONN_STRING"] ?? "Data Source=noteapp.db")
     .UseSeeding(async (context, _) =>
         {
             var test = context.Set<NoteType>().Any();

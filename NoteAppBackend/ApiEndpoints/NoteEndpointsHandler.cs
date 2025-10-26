@@ -1,5 +1,6 @@
 ﻿
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NoteAppBackend.DomainModels;
@@ -67,6 +68,19 @@ public static class NoteEndpointsHandler
 
         var result = NotesQueryService.GetPagedNotes(context, treated);
         return result is null ? TypedResults.Ok<List<NotePagedSummary>>([]) : TypedResults.Ok(result);
+    }
+
+    internal static async Task<IResult> GetNoteBySearchParameter([FromServices] NoteAppBackendContext context,
+        string searchParam)
+    {
+        var result = NotesQueryService.GetNoteBySearchParameter(context, searchParam);
+        // var result = await context.Notes.AsNoTracking()
+        //     .Where(n => EF.Functions.Like(n.NoteBody, $"%{searchParam}%") ||
+        //         EF.Functions.Like(n.NoteTitle, $"%{searchParam}%"))
+        //     .Select(n => new { NoteId = n.Id, Title = n.NoteTitle })
+        //     .Take(2)
+        //     .ToListAsync().ConfigureAwait(false);
+        return result is null ? TypedResults.Ok<List<NoteDto>>([]) : TypedResults.Ok(result);
     }
 
     internal static async Task<IResult> UpdateNote([FromServices] NoteAppBackendContext context,

@@ -10,14 +10,6 @@ public static class NotesQueryService
         = EF.CompileQuery((NoteAppBackendContext context) => context.Notes.AsNoTracking()
                   .Select(n => new NoteSummaryDto(n.Id, n.NoteTitle, n.CreatedAt.ToLongDateString(),
                   n.NoteTypeId, NoteAppHelper.Encode(n.CreatedAt))));
-        // = EF.CompileQuery(
-        //     (NoteAppBackendContext context) =>
-        //     context.Notes.AsNoTracking()
-        //         .Include(n => n.Type)
-        //         // .OrderByDescending(n => n.Id)
-        //         .Select(n => n.MapNoteToNoteSummaryDto())
-        //         .ToList()
-        // );
 
     public static readonly Func<NoteAppBackendContext, DateTime, IEnumerable<NoteSummaryDto>> GetPagedNotes
         = EF.CompileQuery(
@@ -25,7 +17,7 @@ public static class NotesQueryService
             context.Notes.AsNoTracking()
                 .Where(n => n.CreatedAt > cursor)
                 .OrderByDescending(n => n.Id)
-                .Select(static n => n.MaptNoteToNotePagedSummaryDto()).Take(10)
+                .Select(static n => n.MaptNoteToNotePagedSummaryDto()).Take(2)
             );
 
     public static readonly Func<NoteAppBackendContext, Guid, NoteDto?> GetNoteById
@@ -37,17 +29,16 @@ public static class NotesQueryService
                 .SingleOrDefault()
             );
 
-    public static readonly Func<NoteAppBackendContext, string, IEnumerable<NoteDto?>> GetNoteBySearchParameter
-        = EF.CompileQuery(
-            static (NoteAppBackendContext context, string searchParam) =>
+
+    public static readonly Func<NoteAppBackendContext, string, IEnumerable<object?>> 
+    GetNoteBySearchParameter = EF.CompileQuery(
+        (NoteAppBackendContext context, string searchParam) =>
             context.Notes.AsNoTracking()
-                //.Where(n => EF.Functions.ILike(n.NoteBody, $"%{searchParam}%") ||
-                //    EF.Functions.ILike(n.NoteTitle, $"%{searchParam}%"))
-                .OrderByDescending(n => n.Id)
-                .Select(static n => n.MapNoteToNoteDto())
-                .Take(20)
-                .ToList()
-            );
+                .Where(n => EF.Functions.Like(n.NoteBody, "%" + searchParam + "%") ||
+                    EF.Functions.Like(n.NoteTitle, "%" + searchParam + "%"))
+                .Select(static n => new { NoteId = n.Id, Title = n.NoteTitle, NoteContent = n.NoteBody })
+                .Take(2)
+    );
 
     public static readonly Func<NoteAppBackendContext, NoteTypeSummaryDto[]> GetNoteTypes
         = EF.CompileQuery(
@@ -72,7 +63,7 @@ public static class NotesQueryService
         = EF.CompileQuery(
             (NoteAppBackendContext context) =>
             context.NoteTypes.AsNoTracking()
-            //  .OrderByDescending(t => t.Id)
+             .OrderByDescending(t => t.CreatedAt)
             .Select(t => new NoteTypeSummaryDto(t.Id, t.Name, t.Description, t.ColorCode,
                 NoteAppHelper.Encode(t.CreatedAt))).ToArray()
         );
