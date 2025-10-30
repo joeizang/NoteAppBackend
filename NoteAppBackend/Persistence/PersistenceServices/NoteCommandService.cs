@@ -101,7 +101,7 @@ public class CommandService : ICommandService
                     .SetProperty(n => n.UpdatedAt, TimeOnly.FromDateTime(DateTime.UtcNow))
                     .SetProperty(n => n.UpdatedOn, DateOnly.FromDateTime(DateTime.UtcNow))
                 );
-            return new Result<Note>();
+            return new Result<Note>(Note.Create(entity.NoteId));
         }
         catch (Exception ex)
         {

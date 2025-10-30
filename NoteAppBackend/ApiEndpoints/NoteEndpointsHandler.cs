@@ -77,12 +77,11 @@ public static class NoteEndpointsHandler
         return result is null ? TypedResults.Ok<List<NoteDto>>([]) : TypedResults.Ok(result);
     }
 
-    internal static async Task<IResult> UpdateNote([FromServices] NoteAppBackendContext context,
-        [FromBody] NoteUpdateDto dto, [FromServices] ICommandService command)
+    internal static async Task<IResult> UpdateNote([FromServices] NoteAppBackendContext context, Guid id, [FromBody] NoteUpdateDto dto, [FromServices] ICommandService command)
     {
-        var entity = NoteUpdateDto.MapToNote(dto);
-        if (entity.Item1 is null && entity.Item2 is not null)
-            return TypedResults.BadRequest(entity.Item2.ErrorMessage);
+        // var entity = NoteUpdateDto.MapToNote(dto);
+        // if (entity.Item1 is null && entity.Item2 is not null)
+        //     return TypedResults.BadRequest(entity.Item2.ErrorMessage);
 
         var result = await command.Update(dto).ConfigureAwait(false);
 

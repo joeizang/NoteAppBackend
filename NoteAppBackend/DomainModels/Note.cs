@@ -55,4 +55,9 @@ public sealed class Note : AggregateRoot
             UpdatedAt = TimeOnly.FromDateTime(now)
         };
     }
+
+    public static Note Create(Guid id)
+    {
+        return new Note(id);
+    }
 }
